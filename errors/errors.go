@@ -13,7 +13,6 @@ type RestErr interface {
 	Status() int
 	Error() string
 	Causes() []interface{}
-	Dummy() string
 }
 
 type restErr struct {
@@ -37,10 +36,6 @@ func (e restErr) Status() int {
 
 func (e restErr) Causes() []interface{} {
 	return e.ErrCauses
-}
-
-func (e restErr) Dummy() string {
-	return e.ErrMessage
 }
 
 //NewRestError func
