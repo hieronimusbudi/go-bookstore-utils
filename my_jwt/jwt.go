@@ -15,8 +15,7 @@ type UserPayload struct {
 	Status    string
 }
 
-// test
-func GenerateToken(user *UserPayload) (string, resterrors.RestErr) {
+func GenerateToken(user *UserPayload, secret string) (string, resterrors.RestErr) {
 	atClaims := jwt.MapClaims{}
 	atClaims["id"] = user.Id
 	atClaims["email"] = user.Email
@@ -26,7 +25,7 @@ func GenerateToken(user *UserPayload) (string, resterrors.RestErr) {
 	atClaims["exp"] = time.Now().Add(time.Minute * 180).Unix()
 
 	sign := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	token, err := sign.SignedString([]byte("secret"))
+	token, err := sign.SignedString([]byte(secret))
 
 	if err != nil {
 		return "", resterrors.NewInternalServerError("error when trying to create token", err)
@@ -34,13 +33,13 @@ func GenerateToken(user *UserPayload) (string, resterrors.RestErr) {
 	return token, nil
 }
 
-func VerifyToken(tokenString string) (*jwt.Token, resterrors.RestErr) {
+func VerifyToken(tokenString string, secret string) (*jwt.Token, resterrors.RestErr) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		if jwt.GetSigningMethod("HS256") != t.Method {
 			return nil, resterrors.NewBadRequestError("Unexpected signing method")
 		}
 
-		return []byte("secret"), nil
+		return []byte(secret), nil
 	})
 	if err != nil {
 		return nil, resterrors.NewInternalServerError("error when verify token", err)
@@ -48,8 +47,8 @@ func VerifyToken(tokenString string) (*jwt.Token, resterrors.RestErr) {
 	return token, nil
 }
 
-func TokenValid(tokenString string) (jwt.MapClaims, resterrors.RestErr) {
-	token, err := VerifyToken(tokenString)
+func ValidateToken(tokenString string, secret string) (jwt.MapClaims, resterrors.RestErr) {
+	token, err := VerifyToken(tokenString, secret)
 	if err != nil {
 		return nil, resterrors.NewUnauthorizedError(err.Message())
 	}
