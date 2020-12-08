@@ -7,7 +7,7 @@ import (
 	resterrors "github.com/hieronimusbudi/go-bookstore-utils/rest_errors"
 )
 
-type userPayload struct {
+type UserPayload struct {
 	Id        int64
 	Email     string
 	FirstName string
@@ -16,7 +16,7 @@ type userPayload struct {
 }
 
 // test
-func GenerateToken(user *userPayload) (string, resterrors.RestErr) {
+func GenerateToken(user *UserPayload) (string, resterrors.RestErr) {
 	atClaims := jwt.MapClaims{}
 	atClaims["id"] = user.Id
 	atClaims["email"] = user.Email
