@@ -15,6 +15,7 @@ type userPayload struct {
 	Status    string
 }
 
+// test
 func GenerateToken(user *userPayload) (string, resterrors.RestErr) {
 	atClaims := jwt.MapClaims{}
 	atClaims["id"] = user.Id
