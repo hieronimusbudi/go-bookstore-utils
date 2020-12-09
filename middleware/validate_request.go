@@ -28,6 +28,7 @@ func ValidateRequest(jwtSecret string, jwtCookieName string) gin.HandlerFunc {
 		c.Set("tokenClaims", tokenClaims)
 		tokenClaimsV := c.GetStringMap("tokenClaims")
 		log.Printf("xx %v", tokenClaimsV)
+		c.Request.WithContext(c)
 		c.Next()
 	}
 }
