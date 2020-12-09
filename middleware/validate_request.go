@@ -13,6 +13,7 @@ func ValidateRequest(jwtSecret string, jwtCookieName string) gin.HandlerFunc {
 		if jwtErr != nil {
 			restJwtErr := resterrors.NewUnauthorizedError(jwtErr.Error())
 			c.JSON(restJwtErr.Status(), restJwtErr)
+			c.Abort()
 			return
 		}
 
@@ -20,6 +21,7 @@ func ValidateRequest(jwtSecret string, jwtCookieName string) gin.HandlerFunc {
 		tokenClaims, tokenErr := myjwt.ValidateToken(jwtCookie.Value, jwtSecret)
 		if tokenErr != nil {
 			c.JSON(tokenErr.Status(), tokenErr)
+			c.Abort()
 			return
 		}
 
