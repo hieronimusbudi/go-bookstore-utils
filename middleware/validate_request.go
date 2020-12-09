@@ -1,8 +1,6 @@
 package middleware
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	myjwt "github.com/hieronimusbudi/go-bookstore-utils/my_jwt"
 	resterrors "github.com/hieronimusbudi/go-bookstore-utils/rest_errors"
@@ -26,9 +24,6 @@ func ValidateRequest(jwtSecret string, jwtCookieName string) gin.HandlerFunc {
 		}
 
 		c.Set("tokenClaims", tokenClaims)
-		tokenClaimsV := c.GetStringMap("tokenClaims")
-		log.Printf("xx %v", tokenClaimsV)
-		c.Request.WithContext(c)
 		c.Next()
 	}
 }
