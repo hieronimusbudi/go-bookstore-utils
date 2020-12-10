@@ -49,7 +49,7 @@ func RunConsumer() {
 
 		unMErr := json.Unmarshal([]byte(string(m.Value)), responseMessage)
 		if unMErr != nil {
-			panic(unMErr)
+			log.Fatalln(unMErr)
 		}
 
 		log.Printf("message at topic:%v partition:%v offset:%v	%s = %s | %s | %s\n", m.Topic, m.Partition, m.Offset, string(m.Key), string(m.Value), responseMessage.Action, responseMessage.Context.Field)
