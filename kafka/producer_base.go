@@ -64,7 +64,7 @@ func getKafkaWriter(kafkaURL, topic string) *kafka.Writer {
 		Addr:         kafka.TCP(kafkaURL),
 		Topic:        topic,
 		Balancer:     &kafka.LeastBytes{},
-		BatchSize:    10,
+		BatchSize:    1,
 		BatchTimeout: 10 * time.Millisecond,
 	}
 }
