@@ -3,7 +3,6 @@ package kafkautils
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -13,7 +12,6 @@ import (
 
 func getKafkaReader(kafkaUrl string, topic string, groupId string) *kafka.Reader {
 	brokers := strings.Split(kafkaUrl, ",")
-	fmt.Println("getKafkaReader")
 	return kafka.NewReader(kafka.ReaderConfig{
 		Brokers:  brokers,
 		GroupID:  groupId,
@@ -24,23 +22,15 @@ func getKafkaReader(kafkaUrl string, topic string, groupId string) *kafka.Reader
 	})
 }
 
-func RunConsumer() {
+func RunConsumer(topic string, groupID string) {
 	// get kafka reader using environment variables.
 	kafkaURL := os.Getenv("KAFKA_URL")
-	topic := os.Getenv("KAFKA_TOPIC")
-	groupID := os.Getenv("KAFKA_GROUP_ID")
 	responseMessage := &Message{}
-	_ = responseMessage
-
-	// kafkaURL := "kafka-service:9092"
-	// topic := "admintome-test"
-	// groupID := "consumer-group-id"
 
 	reader := getKafkaReader(kafkaURL, topic, groupID)
-
 	defer reader.Close()
 
-	log.Println("start consuming ... !!")
+	log.Println("Run Consumer...")
 	for {
 		m, err := reader.ReadMessage(context.Background())
 		if err != nil {
@@ -52,6 +42,6 @@ func RunConsumer() {
 			log.Fatalln(unMErr)
 		}
 
-		log.Printf("message at topic:%v partition:%v offset:%v	%s = %s | %s | %s\n", m.Topic, m.Partition, m.Offset, string(m.Key), string(m.Value), responseMessage.Action, responseMessage.Context.Field)
+		log.Printf("message at topic:%v partition:%v offset:%v	%s = %s | %s | %+v\n", m.Topic, m.Partition, m.Offset, string(m.Key), string(m.Value), responseMessage.Action, responseMessage.Context)
 	}
 }

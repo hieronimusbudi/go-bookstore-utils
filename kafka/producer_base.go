@@ -26,38 +26,14 @@ type Message struct {
 	Context MessageContext
 }
 
-type MessageContext struct {
-	Id       string
-	Field    string
-	Previous string
-	New      string
-}
+// type MessageContext struct {
+// 	Id       string
+// 	Field    string
+// 	Previous string
+// 	New      string
+// }
 
-func producerHandler(kafkaWriter *kafka.Writer) {
-	value := &Message{
-		Action: "user_updated",
-		Context: MessageContext{
-			Id:       "1343",
-			Field:    "first_name",
-			Previous: "Robert",
-			New:      "Bob",
-		},
-	}
-
-	jsonOut, jsonErr := json.Marshal(value)
-	if jsonErr != nil {
-		panic(jsonErr)
-	}
-
-	msg := kafka.Message{
-		Key:   []byte(fmt.Sprintf("Key-%d", 1)),
-		Value: []byte(fmt.Sprint(string(jsonOut))),
-	}
-	err := kafkaWriter.WriteMessages(context.Background(), msg)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
+type MessageContext struct{}
 
 func getKafkaWriter(kafkaURL, topic string) *kafka.Writer {
 	return &kafka.Writer{
@@ -69,20 +45,31 @@ func getKafkaWriter(kafkaURL, topic string) *kafka.Writer {
 	}
 }
 
-func RunProducer() {
+func producerHandler(kafkaWriter *kafka.Writer, message *Message) {
+	jsonOut, jsonErr := json.Marshal(message)
+	if jsonErr != nil {
+		log.Fatalln(jsonErr)
+	}
+
+	msg := kafka.Message{
+		Key:   []byte(fmt.Sprintf("Key-%d", 1)),
+		Value: []byte(fmt.Sprint(string(jsonOut))),
+	}
+	err := kafkaWriter.WriteMessages(context.Background(), msg)
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func RunProducer(message Message, topic string) {
 	// get kafka reader using environment variables.
 	kafkaURL := os.Getenv("KAFKA_URL")
-	topic := os.Getenv("KAFKA_TOPIC")
-	// groupID := os.Getenv("KAFKA_GROUP_ID")
-	// kafkaURL := "kafka-service:9092"
-	// topic := "admintome-test"
 	kafkaWriter := getKafkaWriter(kafkaURL, topic)
-
 	defer kafkaWriter.Close()
 
 	// Add handle func for producer.
-	producerHandler(kafkaWriter)
+	producerHandler(kafkaWriter, &message)
 
 	// Run the web server.
-	log.Println("start producer-api ... !!")
+	log.Println("Run Producer...")
 }
