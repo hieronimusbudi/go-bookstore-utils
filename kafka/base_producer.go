@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	kafka "github.com/segmentio/kafka-go"
@@ -61,9 +60,8 @@ func producerHandler(kafkaWriter *kafka.Writer, message *Message) {
 	}
 }
 
-func RunProducer(message *Message, topic string) {
+func RunProducer(kafkaURL string, topic string, message *Message) {
 	// get kafka reader using environment variables.
-	kafkaURL := os.Getenv("KAFKA_URL")
 	kafkaWriter := getKafkaWriter(kafkaURL, topic)
 	defer kafkaWriter.Close()
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"os"
 	"strings"
 
 	kafka "github.com/segmentio/kafka-go"
@@ -22,9 +21,8 @@ func getKafkaReader(kafkaUrl string, topic string, groupId string) *kafka.Reader
 	})
 }
 
-func RunConsumer(topic string, groupID string, resultChannel chan Message) {
+func RunConsumer(kafkaURL string, topic string, groupID string, resultChannel chan Message) {
 	// get kafka reader using environment variables.
-	kafkaURL := os.Getenv("KAFKA_URL")
 	responseMessage := &Message{}
 
 	reader := getKafkaReader(kafkaURL, topic, groupID)
