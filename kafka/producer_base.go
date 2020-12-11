@@ -61,14 +61,14 @@ func producerHandler(kafkaWriter *kafka.Writer, message *Message) {
 	}
 }
 
-func RunProducer(message Message, topic string) {
+func RunProducer(message *Message, topic string) {
 	// get kafka reader using environment variables.
 	kafkaURL := os.Getenv("KAFKA_URL")
 	kafkaWriter := getKafkaWriter(kafkaURL, topic)
 	defer kafkaWriter.Close()
 
 	// Add handle func for producer.
-	producerHandler(kafkaWriter, &message)
+	producerHandler(kafkaWriter, message)
 
 	// Run the web server.
 	log.Println("Run Producer...")
