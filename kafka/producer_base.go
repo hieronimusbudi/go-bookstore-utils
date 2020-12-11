@@ -23,7 +23,7 @@ import (
 
 type Message struct {
 	Action  string
-	Context MessageContext
+	Context interface{}
 }
 
 // type MessageContext struct {
