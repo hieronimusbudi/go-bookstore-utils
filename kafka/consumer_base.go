@@ -22,7 +22,7 @@ func getKafkaReader(kafkaUrl string, topic string, groupId string) *kafka.Reader
 	})
 }
 
-func RunConsumer(topic string, groupID string) {
+func RunConsumer(topic string, groupID string, resultChannel chan Message) {
 	// get kafka reader using environment variables.
 	kafkaURL := os.Getenv("KAFKA_URL")
 	responseMessage := &Message{}
@@ -42,6 +42,8 @@ func RunConsumer(topic string, groupID string) {
 			log.Fatalln(unMErr)
 		}
 
+		// send result to main thread
+		resultChannel <- *responseMessage
 		log.Printf("message at topic:%v partition:%v offset:%v	%s = %s | %s | %+v\n", m.Topic, m.Partition, m.Offset, string(m.Key), string(m.Value), responseMessage.Action, responseMessage.Context)
 	}
 }
