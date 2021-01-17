@@ -1,10 +1,17 @@
 package middleware
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
-	myjwt "github.com/hieronimusbudi/go-bookstore-utils/my_jwt"
+	jwtutils "github.com/hieronimusbudi/go-bookstore-utils/jwt"
 	resterrors "github.com/hieronimusbudi/go-bookstore-utils/rest_errors"
+)
+
+var (
+	jwtSecret     = os.Getenv("JWT_SECRET")
+	jwtCookieName = os.Getenv("JWT_COOKIE_NAME")
 )
 
 func ValidateRequest(c *fiber.Ctx) error {
@@ -16,7 +23,7 @@ func ValidateRequest(c *fiber.Ctx) error {
 	}
 
 	// Validate token
-	tokenClaims, tokenErr := myjwt.ValidateToken(token, jwtSecret)
+	tokenClaims, tokenErr := jwtutils.ValidateToken(token, jwtSecret)
 	if tokenErr != nil {
 		restJwtErr := resterrors.NewUnauthorizedError("Token claims not exists")
 		return c.Status(restJwtErr.Status()).JSON(restJwtErr)
@@ -38,7 +45,7 @@ func _ValidateRequest(jwtSecret string, jwtCookieName string) gin.HandlerFunc {
 		}
 
 		// Validate token
-		tokenClaims, tokenErr := myjwt.ValidateToken(jwtCookie.Value, jwtSecret)
+		tokenClaims, tokenErr := jwtutils.ValidateToken(jwtCookie.Value, jwtSecret)
 		if tokenErr != nil {
 			c.JSON(tokenErr.Status(), tokenErr)
 			c.Abort()
