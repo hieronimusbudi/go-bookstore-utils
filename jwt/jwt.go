@@ -1,4 +1,4 @@
-package myjwt
+package jwtutils
 
 import (
 	"time"
